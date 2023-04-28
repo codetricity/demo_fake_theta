@@ -124,7 +124,7 @@ class _MiniAppState extends State<MiniApp> {
                       'parameters': {
                         'fileType': 'image',
                         'startPosition': 0,
-                        'entryCount': 6,
+                        'entryCount': 16,
                         'maxThumbSize': 0,
                         '_detail': true,
                       }
