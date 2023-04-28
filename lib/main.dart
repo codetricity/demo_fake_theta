@@ -54,7 +54,7 @@ class _MiniAppState extends State<MiniApp> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Expanded(
-            flex: 4,
+            flex: 2,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -124,7 +124,7 @@ class _MiniAppState extends State<MiniApp> {
                       'parameters': {
                         'fileType': 'image',
                         'startPosition': 0,
-                        'entryCount': 1,
+                        'entryCount': 6,
                         'maxThumbSize': 0,
                         '_detail': true,
                       }
@@ -133,14 +133,36 @@ class _MiniAppState extends State<MiniApp> {
                     var response = await http.post(url,
                         headers: {'Content-Type': 'application/json'},
                         body: bodyJson);
-                    var imageUrl = jsonDecode(response.body)['results']
-                        ['entries'][0]['fileUrl'];
+                    final imageEntries =
+                        jsonDecode(response.body)['results']['entries'];
+                    var listOfThumbUrls = [];
+                    for (var entry in imageEntries) {
+                      // listOfImageUrls.add(entry['fileUrl']);
+                      var imageLocation = entry['fileUrl'];
+                      // final splitUrl = imageUrl.split('/');
+                      var imageUrl = Uri.parse(imageLocation);
+                      final imagePath = imageUrl.path;
+                      final imagePathList = imagePath.split('/');
+                      final filename = imagePathList.last;
+                      final thumbUrl =
+                          'https://codetricity.github.io/fake-storage/files/100RICOH/thumb/$filename';
+                      listOfThumbUrls.add(thumbUrl);
+                    }
+                    print(listOfThumbUrls);
 
                     setState(() {
-                      displayWidget = SingleChildScrollView(
-                        // child: Text(imageUrl.toString()),
-                        child: Image.network(imageUrl),
-                      );
+                      displayWidget = GridView.builder(
+                          itemCount: listOfThumbUrls.length,
+                          gridDelegate:
+                              const SliverGridDelegateWithMaxCrossAxisExtent(
+                                  maxCrossAxisExtent: 200,
+                                  childAspectRatio: 4 / 2,
+                                  crossAxisSpacing: 10,
+                                  mainAxisSpacing: 10),
+                          itemBuilder: (BuildContext context, index) {
+                            return Image.network(listOfThumbUrls[index]);
+                          });
+                      // child: Image.network(thumbUrl),
                     });
                   },
                   child: const Text('thumbs'),
